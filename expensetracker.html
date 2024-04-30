@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="expensetracker.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        <form id="expense-form">
+            <input type="text" id="item" placeholder="Enter Item" pattern="[A-Za-z ]+" title="Item cannot contain numbers">
+            <input type="number" id="cost" placeholder="Enter Cost">
+            <select id="category" style="font-size: 18px;">
+                <option value="Food">Food</option>
+                <option value="Books">Books</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+            </select>
+            <button type="submit" id="add-expense">Add Expense</button>
+        </form>
+        <ul id="expense-list"></ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const expenseForm = document.getElementById('expense-form');
+            const expenseList = document.getElementById('expense-list');
+
+            expenseForm.addEventListener('submit', addExpense);
+
+            document.getElementById('item').addEventListener('input', function(event) {
+                if (!isNaN(this.value)) {
+                    this.setCustomValidity('Item cannot contain numbers');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+
+            function addExpense(event) {
+                event.preventDefault();
+
+                const itemInput = document.getElementById('item');
+                const costInput = document.getElementById('cost');
+                const categoryInput = document.getElementById('category');
+
+                const item = itemInput.value;
+                const cost = parseFloat(costInput.value);
+                const category = categoryInput.value;
+
+                if (item && !isNaN(cost)) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${item}: $${cost.toFixed(2)} - ${category}</span>
+                        <button class="delete-btn delete">Delete</button>
+                    `;
+                    expenseList.appendChild(li);
+
+                    itemInput.value = '';
+                    costInput.value = '';
+                    categoryInput.value = 'Food';
+                } else {
+                    alert('Please enter valid item and cost!');
+                }
+            }
+
+            expenseList.addEventListener('click', deleteExpense);
+
+            function deleteExpense(event) {
+                if (event.target.classList.contains('delete-btn')) {
+                    const listItem = event.target.parentElement;
+                    listItem.classList.add('li-leave');
+                    setTimeout(() => {
+                        expenseList.removeChild(listItem);
+                    }, 500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
